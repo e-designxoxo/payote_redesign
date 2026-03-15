@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PAYOTE — Payment, Shipping & Returns</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --sand:    #f5ede0;
+      --cream:   #faf8f5;
+      --ink:     #16140f;
+      --muted:   #8a7e72;
+      --accent:  #c4a46b;
+      --fr-blue: #002395;
+      --fr-red:  #ED2939;
+      --green:   #1a7a42;
+      --serif:   'Cormorant Garamond', Georgia, serif;
+      --sans:    'Outfit', system-ui, sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--cream);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      font-size: 17px;
+      line-height: 1.75;
+    }
+
+    /* ── STICKY NAV ──────────────────────────── */
+    .sticky-nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(250,248,245,.93);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(22,20,15,.07);
+    }
+    .sticky-nav::before {
+      content: ''; display: block; height: 3px;
+      background: linear-gradient(to right, var(--fr-blue) 33%, rgba(200,200,200,.5) 33% 66%, var(--fr-red) 66%);
+    }
+    .nav-inner {
+      max-width: 1200px; margin: auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .9rem 2.5rem; gap: 2rem;
+    }
+    .nav-brand { font-family: var(--serif); font-size: 1.5rem; font-weight: 300; letter-spacing: .08em; text-decoration: none; color: var(--ink); }
+    .nav-steps { display: flex; gap: .3rem; }
+    .nav-step {
+      font-size: .72rem; letter-spacing: .06em; padding: .35rem .9rem;
+      border-radius: 999px; text-decoration: none; color: var(--muted);
+      border: 1px solid transparent;
+      transition: color .2s, border-color .2s, background .2s;
+      white-space: nowrap;
+    }
+    .nav-step:hover   { color: var(--ink); border-color: rgba(22,20,15,.12); }
+    .nav-step.active  { color: var(--ink); background: var(--sand); border-color: rgba(22,20,15,.1); }
+
+    /* ── HERO ────────────────────────────────── */
+    .hero {
+      background: var(--ink); color: #fff;
+      min-height: 62vh; display: flex; align-items: center;
+      position: relative; overflow: hidden; padding: 6rem 2.5rem;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(to right, var(--fr-blue) 33%, rgba(255,255,255,.4) 33% 66%, var(--fr-red) 66%);
+    }
+    .hero::after {
+      content: ''; position: absolute; inset: -200%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: .5; pointer-events: none;
+    }
+    .hero-edge {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 4px; display: flex; flex-direction: column; z-index: 2;
+    }
+    .hero-edge span { flex: 1; }
+    .hero-edge .b { background: var(--fr-blue); }
+    .hero-edge .w { background: rgba(255,255,255,.55); }
+    .hero-edge .r { background: var(--fr-red); }
+
+    .hero-inner { max-width: 1200px; margin: auto; width: 100%; position: relative; z-index: 2; }
+    .hero-eyebrow {
+      font-size: .68rem; letter-spacing: .42em; text-transform: uppercase;
+      color: rgba(255,255,255,.38); margin-bottom: 2rem;
+      animation: fadeUp .8s .1s both;
+    }
+    .hero-title {
+      font-family: var(--serif); font-size: clamp(3.5rem, 8vw, 7.5rem);
+      font-weight: 300; line-height: 1.0; letter-spacing: -.01em; max-width: 900px;
+      animation: fadeUp .9s .25s both;
+    }
+    .hero-title em { font-style: italic; color: var(--accent); }
+    .hero-sub {
+      margin-top: 2rem; max-width: 560px;
+      font-size: 1.1rem; color: rgba(255,255,255,.58); font-weight: 300; line-height: 1.85;
+      animation: fadeUp .8s .45s both;
+    }
+    .hero-steps {
+      display: flex; gap: 2rem; margin-top: 3.5rem; flex-wrap: wrap;
+      animation: fadeUp .8s .6s both;
+    }
+    .hs-item { display: flex; align-items: center; gap: .65rem; }
+    .hs-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.18);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .72rem; color: rgba(255,255,255,.45); flex-shrink: 0;
+    }
+    .hs-label { font-size: .8rem; color: rgba(255,255,255,.45); letter-spacing: .05em; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── STEP SECTION ────────────────────────── */
+    .step {
+      padding: 7rem 2.5rem;
+      border-bottom: 1px solid rgba(22,20,15,.07);
+    }
+    .step:nth-child(odd)  { background: var(--cream); }
+    .step:nth-child(even) { background: var(--sand); }
+    .step-inner { max-width: 1200px; margin: auto; }
+
+    .step-header {
+      display: flex; align-items: flex-start; gap: 3.5rem;
+      margin-bottom: 4.5rem;
+    }
+    .step-num-block { flex-shrink: 0; text-align: left; }
+    .step-num {
+      font-family: var(--serif); font-size: 6rem; font-weight: 300;
+      line-height: 1; color: rgba(22,20,15,.07); display: block;
+    }
+    .step-tag {
+      font-size: .6rem; letter-spacing: .38em; text-transform: uppercase;
+      color: var(--muted); margin-top: .3rem; display: block;
+    }
+    .step-fr {
+      display: flex; height: 2px; width: 32px; margin-top: .5rem;
+      border-radius: 2px; overflow: hidden;
+    }
+    .step-fr span { flex: 1; }
+    .step-fr .b { background: var(--fr-blue); }
+    .step-fr .w { background: rgba(200,200,200,.6); }
+    .step-fr .r { background: var(--fr-red); }
+    .step-headline { flex: 1; }
+    .step-h {
+      font-family: var(--serif); font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+      font-weight: 300; line-height: 1.1; letter-spacing: -.01em;
+    }
+    .step-h em { font-style: italic; color: var(--accent); }
+    .step-lead {
+      margin-top: 1.2rem; font-size: 1.05rem; color: var(--muted);
+      max-width: 620px; line-height: 1.9; font-weight: 300;
+    }
+
+    /* ── STEP 1 · THREE.JS ORB ───────────────── */
+    .promises-scene {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 5rem; align-items: center;
+    }
+    .orb-col { position: relative; }
+    .orb-wrap {
+      position: relative;
+      width: 400px; height: 400px;
+    }
+    #orbCanvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block; border-radius: 50%;
+    }
+    /* Halo behind canvas */
+    .orb-wrap::before {
+      content: '';
+      position: absolute; inset: -15%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(196,164,107,.14) 0%, transparent 65%);
+      animation: haloBreath 5s ease-in-out infinite;
+      pointer-events: none; z-index: 0;
+    }
+    @keyframes haloBreath {
+      0%,100% { opacity: .6; transform: scale(1);    }
+      50%      { opacity: 1;  transform: scale(1.06); }
+    }
+    /* Ground shadow */
+    .orb-wrap::after {
+      content: '';
+      position: absolute; bottom: -6%; left: 50%;
+      transform: translateX(-50%);
+      width: 55%; height: 10px;
+      background: radial-gradient(ellipse, rgba(22,20,15,.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Floating label container — overlays canvas exactly */
+    .orb-labels {
+      position: absolute; inset: 0;
+      pointer-events: none;
+    }
+    /* Each orbiting label — proper card, not a pill */
+    .orb-label {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      display: flex; flex-direction: column; align-items: center; gap: .4rem;
+      background: rgba(16,14,10,.88);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 1.1rem;
+      padding: .85rem 1.1rem;
+      min-width: 100px; text-align: center;
+      pointer-events: all; cursor: pointer;
+      transition: border-color .3s, box-shadow .3s;
+      will-change: left, top, opacity, transform;
+      box-shadow: 0 4px 20px rgba(0,0,0,.35);
+    }
+    .orb-label:hover { border-color: rgba(196,164,107,.7); box-shadow: 0 6px 28px rgba(0,0,0,.5); }
+    .orb-label.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(196,164,107,.25), 0 8px 32px rgba(0,0,0,.4);
+    }
+    .ol-icon { font-size: 1.7rem; line-height: 1; }
+    .ol-name {
+      font-size: .75rem; font-weight: 500; color: rgba(255,255,255,.9);
+      letter-spacing: .03em; line-height: 1.3; white-space: nowrap;
+    }
+
+    /* Detail panel */
+    .orb-detail { display: flex; flex-direction: column; gap: 0; }
+    .od-eyebrow {
+      font-size: .62rem; letter-spacing: .38em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 1rem;
+    }
+    .od-icon {
+      font-size: 2.8rem; line-height: 1; margin-bottom: .9rem;
+      transition: transform .4s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+    }
+    .od-icon.swap { transform: scale(.6); opacity: 0; }
+    .od-title {
+      font-family: var(--serif); font-size: 2.2rem; font-weight: 300;
+      line-height: 1.1; letter-spacing: -.01em;
+      transition: opacity .25s, transform .25s;
+    }
+    .od-title.swap { opacity: 0; transform: translateY(8px); }
+    .od-body {
+      font-size: 1rem; color: var(--muted); margin-top: 1.1rem;
+      line-height: 1.9; max-width: 460px;
+      transition: opacity .25s, transform .25s;
+    }
+    .od-body.swap { opacity: 0; transform: translateY(8px); }
+    .od-chip {
+      display: inline-flex; width: fit-content;
+      font-size: .72rem; padding: .28rem .85rem; border-radius: 999px;
+      margin-top: 1.4rem;
+      transition: opacity .25s;
+    }
+    .od-chip.swap { opacity: 0; }
+    .pc-g { background: rgba(26,122,66,.08);   color: var(--green); }
+    .pc-b { background: rgba(0,35,149,.07);    color: var(--fr-blue); }
+    .pc-r { background: rgba(237,41,57,.07);   color: var(--fr-red); }
+    .pc-a { background: rgba(196,164,107,.12); color: #8a6520; }
+    /* Nav dots */
+    .od-dots { display: flex; gap: .65rem; margin-top: 2rem; }
+    .od-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(22,20,15,.15); cursor: pointer;
+      transition: background .3s, transform .3s;
+      border: none; padding: 0;
+    }
+    .od-dot:hover   { background: rgba(22,20,15,.35); }
+    .od-dot.active  { background: var(--ink); transform: scale(1.4); }
+
+    @media (max-width: 960px) {
+      .promises-scene { grid-template-columns: 1fr; }
+      .orb-wrap { width: 280px; height: 280px; margin: 0 auto; }
+    }
+
+    /* ── STEP 2 · PAYMENT ────────────────────── */
+    .pay-layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 3rem; align-items: start; }
+    .pay-col-label {
+      font-size: .7rem; letter-spacing: .28em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 1.4rem;
+      padding-bottom: .7rem; border-bottom: 1px solid rgba(22,20,15,.08);
+    }
+    /* Big tile grid — left column */
+    .pay-tiles {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: .9rem;
+    }
+    .pay-tile {
+      background: #fff; border: 1.5px solid rgba(22,20,15,.07);
+      border-radius: 1.2rem; padding: 1.5rem 1.2rem;
+      display: flex; flex-direction: column; align-items: flex-start; gap: .7rem;
+      transition: border-color .25s, transform .3s, box-shadow .3s;
+      cursor: default;
+    }
+    .pay-tile:hover {
+      border-color: var(--fr-blue); transform: translateY(-5px);
+      box-shadow: 0 12px 32px rgba(0,35,149,.1);
+    }
+    .pay-tile.intl-star { border-color: rgba(0,35,149,.2); background: rgba(0,35,149,.025); }
+    .pt-icon {
+      font-size: 2rem; line-height: 1;
+      width: 52px; height: 52px;
+      background: var(--cream); border-radius: .9rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pt-name  { font-size: .95rem; font-weight: 600; }
+    .pt-desc  { font-size: .78rem; color: var(--muted); line-height: 1.6; flex: 1; }
+    .pt-badge {
+      font-size: .62rem; padding: .2rem .65rem; border-radius: 999px; margin-top: auto;
+    }
+    .pib-i { background: rgba(0,35,149,.07); color: var(--fr-blue); }
+    .pib-f { background: rgba(196,164,107,.12); color: #8a6520; }
+    .pib-b { background: rgba(237,41,57,.07); color: var(--fr-red); }
+    .pib-g { background: rgba(26,122,66,.07); color: var(--green); }
+
+    /* Right sidebar */
+    .pay-sidebar { display: flex; flex-direction: column; gap: 1.2rem; }
+    .sec-box {
+      padding: 1.6rem; border-radius: 1.2rem;
+      background: rgba(0,35,149,.04); border: 1px solid rgba(0,35,149,.1);
+    }
+    .sec-box-label { font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--fr-blue); margin-bottom: .6rem; }
+    .sec-box-title { font-size: 1rem; font-weight: 500; margin-bottom: .45rem; }
+    .sec-box-body  { font-size: .88rem; color: var(--muted); line-height: 1.8; }
+
+    /* France-only dignified strip */
+    .fr-only-strip {
+      padding: 1.2rem 1.4rem;
+      border-radius: 1rem;
+      background: var(--sand);
+      border: 1px solid rgba(22,20,15,.08);
+    }
+    .fos-label {
+      font-size: .68rem; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: .9rem;
+    }
+    .fos-items { display: flex; flex-direction: column; gap: .6rem; }
+    .fos-item  {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .7rem .9rem; border-radius: .75rem;
+      background: rgba(255,255,255,.7);
+      border: 1px solid rgba(22,20,15,.06);
+    }
+    .fos-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .fos-name { font-size: .85rem; font-weight: 500; }
+    .fos-desc { font-size: .75rem; color: var(--muted); margin-top: .05rem; }
+
+    .sec-strip {
+      display: flex; flex-wrap: wrap; gap: .6rem;
+      margin-top: 3rem; padding-top: 2rem;
+      border-top: 1px solid rgba(22,20,15,.07);
+    }
+    .sec-pill {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .5rem 1.1rem; border-radius: 999px;
+      font-size: .8rem; border: 1px solid rgba(22,20,15,.1); background: #fff;
+    }
+    .sec-pill .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .sd-g { background: var(--green); box-shadow: 0 0 0 3px rgba(26,122,66,.12); }
+    .sd-b { background: var(--fr-blue); }
+
+    /* ── STEP 3 · SHIPPING ───────────────────── */
+    .free-ship-block {
+      display: flex; align-items: center; gap: 2rem;
+      background: var(--ink); color: #fff;
+      border-radius: 1.4rem; padding: 2.2rem 2.5rem;
+      margin-bottom: 3rem; flex-wrap: wrap;
+    }
+    .fsb-num { font-family: var(--serif); font-size: 4rem; font-weight: 300; line-height: 1; color: var(--accent); flex-shrink: 0; }
+    .fsb-text { flex: 1; }
+    .fsb-title { font-family: var(--serif); font-size: 1.5rem; font-weight: 300; }
+    .fsb-sub   { font-size: .92rem; color: rgba(255,255,255,.55); margin-top: .35rem; line-height: 1.75; }
+
+    .zone-tabs { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+    .ztab {
+      border: 1.5px solid rgba(22,20,15,.12); background: transparent;
+      border-radius: 999px; padding: .5rem 1.1rem; font-size: .8rem;
+      font-family: var(--sans); cursor: pointer; color: var(--ink);
+      position: relative; overflow: hidden;
+      transition: color .25s, border-color .25s;
+    }
+    .ztab::before {
+      content: ''; position: absolute; inset: 0;
+      background: var(--ink); transform: scaleX(0); transform-origin: left;
+      transition: transform .3s cubic-bezier(.4,0,.2,1); z-index: 0;
+    }
+    .ztab:hover { color: #fff; border-color: var(--ink); }
+    .ztab:hover::before { transform: scaleX(1); }
+    .ztab.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .ztab span { position: relative; z-index: 1; }
+
+    .zone-panel { display: none; }
+    .zone-panel.active { display: flex; flex-direction: column; gap: .8rem; animation: zoneIn .3s ease; }
+    @keyframes zoneIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+    .zone-row {
+      display: flex; align-items: center;
+      padding: 1.5rem 1.8rem; border-radius: 1.2rem;
+      background: #fff; border: 1px solid rgba(22,20,15,.07);
+      gap: 1.5rem; flex-wrap: wrap;
+      transition: border-color .25s, background .25s;
+    }
+    .zone-row:hover { border-color: rgba(22,20,15,.18); background: var(--cream); }
+    .zone-row.fi { border-color: var(--fr-blue); background: rgba(0,35,149,.03); }
+    .zr-flag   { font-size: 1.7rem; flex-shrink: 0; }
+    .zr-info   { flex: 1; }
+    .zr-name   { font-size: 1rem; font-weight: 500; }
+    .zr-detail { font-size: .85rem; color: var(--muted); margin-top: .2rem; }
+    .zr-right  { display: flex; align-items: center; gap: 1.1rem; flex-wrap: wrap; }
+    .zr-price  { font-family: var(--serif); font-size: 1.35rem; font-weight: 300; white-space: nowrap; }
+    .zr-free   { font-size: .77rem; color: var(--green); font-weight: 500; }
+    .zr-days   { font-size: .77rem; color: var(--muted); border: 1px solid rgba(22,20,15,.1); border-radius: 999px; padding: .3rem .8rem; white-space: nowrap; }
+
+    /* ── STEP 4 · RETURNS ────────────────────── */
+    .ret-big-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3.5rem; }
+    .ret-big {
+      border-radius: 1.4rem; padding: 2.5rem;
+      display: flex; flex-direction: column; gap: .9rem;
+    }
+    .ret-big.gr { background: rgba(26,122,66,.06); border: 1px solid rgba(26,122,66,.14); }
+    .ret-big.bl { background: rgba(0,35,149,.04);  border: 1px solid rgba(0,35,149,.1);  }
+    .ret-big-num   { font-family: var(--serif); font-size: 5rem; font-weight: 300; line-height: 1; }
+    .ret-big.gr .ret-big-num { color: var(--green); }
+    .ret-big.bl .ret-big-num { color: var(--fr-blue); }
+    .ret-big-title { font-family: var(--serif); font-size: 1.5rem; font-weight: 400; }
+    .ret-big-body  { font-size: .95rem; color: var(--muted); line-height: 1.85; }
+
+    .rt-label-top { font-size: .68rem; letter-spacing: .35em; text-transform: uppercase; color: var(--muted); margin-bottom: 2rem; }
+    .rt-grid {
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 0;
+      position: relative;
+    }
+    .rt-grid::before {
+      content: ''; position: absolute;
+      top: 22px; left: calc(12.5% + 1rem); right: calc(12.5% + 1rem);
+      height: 1px; background: rgba(22,20,15,.1); z-index: 0;
+    }
+    .rt-step { padding: 0 1.2rem; position: relative; z-index: 1; }
+    .rt-step-dot {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--ink); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif); font-size: 1.2rem; font-weight: 300;
+      margin-bottom: 1.4rem;
+      transition: background .3s, transform .3s;
+    }
+    .rt-step:hover .rt-step-dot { background: var(--fr-blue); transform: scale(1.1); }
+    .rt-step-title { font-size: .95rem; font-weight: 500; margin-bottom: .45rem; }
+    .rt-step-desc  { font-size: .87rem; color: var(--muted); line-height: 1.8; }
+
+    /* ── STEP 5 · CHECKOUT ───────────────────── */
+    .checkout-scene { display: grid; grid-template-columns: 1.1fr .9fr; gap: 2.5rem; align-items: start; }
+    .cs-form {
+      background: var(--cream); border-radius: 1.4rem;
+      padding: 2.2rem; border: 1px solid rgba(22,20,15,.08);
+    }
+    .cs-form-title { font-family: var(--serif); font-size: 1.5rem; margin-bottom: 1.8rem; display: flex; align-items: center; gap: .7rem; }
+    .cs-fields { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 1.4rem; }
+    .cs-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    .cs-field {
+      background: #fff; border: 1.5px solid rgba(22,20,15,.1);
+      border-radius: .8rem; padding: .9rem 1.1rem;
+      font-size: .9rem; color: rgba(22,20,15,.35);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .cs-field.full { grid-column: span 2; }
+    .cs-field.lit  { border-color: var(--fr-blue); color: var(--ink); }
+    .cs-lock-icon  { color: var(--green); font-size: .85rem; }
+    .cs-pay-icons  { display: flex; gap: .5rem; flex-wrap: wrap; }
+    .cpi { background: #fff; border: 1px solid rgba(22,20,15,.1); border-radius: .55rem; padding: .4rem .85rem; font-size: .78rem; color: var(--muted); }
+
+    .cs-summary { background: var(--ink); color: #fff; border-radius: 1.4rem; padding: 2.2rem; }
+    .cs-sum-title { font-family: var(--serif); font-size: 1.4rem; margin-bottom: 1.4rem; }
+    .cs-line {
+      display: flex; justify-content: space-between;
+      font-size: .92rem; padding: .5rem 0;
+      color: rgba(255,255,255,.65); border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .cs-line.dim { color: rgba(255,255,255,.38); font-size: .83rem; }
+    .cs-total {
+      display: flex; justify-content: space-between;
+      font-family: var(--serif); font-size: 1.35rem;
+      padding-top: 1rem; margin-top: .5rem;
+      border-top: 1px solid rgba(255,255,255,.12);
+    }
+    .cs-cta {
+      width: 100%; margin-top: 1.4rem;
+      background: var(--fr-blue); color: #fff; border: none;
+      border-radius: 999px; padding: 1rem;
+      font-size: .92rem; font-family: var(--sans); font-weight: 500;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .7rem;
+      transition: opacity .2s, transform .2s;
+    }
+    .cs-cta:hover { opacity: .88; transform: scale(1.02); }
+    .cs-trust { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.1rem; }
+    .cs-trust span { font-size: .73rem; color: rgba(255,255,255,.4); display: flex; align-items: center; gap: .3rem; }
+    .cs-trust span::before { content: '✓'; color: var(--green); }
+
+    /* ── CONTACT ─────────────────────────────── */
+    .contact-section {
+      background: var(--ink); padding: 6rem 2.5rem;
+      color: #fff; text-align: center; position: relative; overflow: hidden;
+    }
+    .contact-section::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(to right, var(--fr-blue) 33%, rgba(255,255,255,.4) 33% 66%, var(--fr-red) 66%);
+    }
+    .contact-eye   { font-size: .65rem; letter-spacing: .4em; text-transform: uppercase; color: rgba(255,255,255,.32); margin-bottom: 1.2rem; }
+    .contact-title { font-family: var(--serif); font-size: clamp(2.2rem,4.5vw,3.5rem); font-weight: 300; }
+    .contact-sub   { font-size: 1.05rem; color: rgba(255,255,255,.52); margin-top: .9rem; line-height: 1.85; }
+    .contact-det   { margin-top: 1.2rem; font-size: .9rem; color: rgba(255,255,255,.35); }
+    .contact-btns  { display: flex; gap: .9rem; justify-content: center; flex-wrap: wrap; margin-top: 2.2rem; }
+    .c-btn { border-radius: 999px; padding: .85rem 2rem; font-size: .88rem; font-family: var(--sans); cursor: pointer; transition: all .25s; }
+    .c-btn.pr { background: #fff; color: var(--ink); border: none; }
+    .c-btn.pr:hover { background: var(--sand); transform: scale(1.03); }
+    .c-btn.ou { background: transparent; color: rgba(255,255,255,.68); border: 1px solid rgba(255,255,255,.2); }
+    .c-btn.ou:hover { border-color: rgba(255,255,255,.6); color: #fff; }
+
+    @media (max-width: 820px) {
+      .pillars { grid-template-columns: 1fr 1fr; }
+      .pay-layout, .ret-big-grid, .checkout-scene { grid-template-columns: 1fr; }
+      .rt-grid { grid-template-columns: 1fr 1fr; }
+      .rt-grid::before { display: none; }
+      .nav-steps { display: none; }
+      .cs-row { grid-template-columns: 1fr; }
+      .cs-field.full { grid-column: span 1; }
+    }
+    @media (max-width: 520px) {
+      .pillars, .rt-grid { grid-template-columns: 1fr; }
+    }
+  
+    /* ── SHARED PROJECT NAV ─────────────────── */
+    .project-nav {
+      background: var(--ink, #16140f);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      position: relative;
+    }
+    .project-nav::before {
+      content: '';
+      display: block; height: 2px;
+      background: linear-gradient(to right, #002395 33%, rgba(255,255,255,.4) 33% 66%, #ED2939 66%);
+    }
+    .pnav-inner {
+      max-width: 1360px; margin: auto;
+      display: flex; align-items: center; gap: 0;
+      padding: 0 2rem; overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .pnav-inner::-webkit-scrollbar { display: none; }
+    .pnav-brand {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.1rem; font-weight: 300; letter-spacing: .1em;
+      color: #fff; text-decoration: none;
+      padding: .75rem 1.2rem .75rem 0;
+      border-right: 1px solid rgba(255,255,255,.1);
+      margin-right: .5rem; white-space: nowrap; flex-shrink: 0;
+    }
+    .pnav-link {
+      font-family: 'Outfit', system-ui, sans-serif;
+      font-size: .7rem; letter-spacing: .06em;
+      color: rgba(255,255,255,.45); text-decoration: none;
+      padding: .78rem .9rem; white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: color .2s, border-color .2s;
+      flex-shrink: 0;
+    }
+    .pnav-link:hover  { color: rgba(255,255,255,.85); }
+    .pnav-link.active { color: #fff; border-bottom-color: #c4a46b; }
+
+    </style>
+</head>
+<body>
+  <!-- SHARED PROJECT NAV -->
+    <nav class="project-nav">
+    <div class="pnav-inner">
+      <a href="index.html"                    class="pnav-brand">PAYOTE</a>
+      <a href="homepage.html"                 class="pnav-link">Store</a>
+      <a href="cart_language.html"            class="pnav-link">Cart &amp; Language</a>
+      <a href="currency_selector.html"        class="pnav-link">Currency</a>
+      <a href="shoe_size.html"                class="pnav-link">Shoe sizes</a>
+      <a href="payment_shipping_returns.html" class="pnav-link active">Payment &amp; Shipping</a>
+    </div>
+  </nav>
+
+
+<!-- STICKY NAV -->
+<nav class="sticky-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="#">PAYOTE</a>
+    <div class="nav-steps">
+      <a class="nav-step active" href="#step1">Guarantees</a>
+      <a class="nav-step" href="#step2">Payment</a>
+      <a class="nav-step" href="#step3">Shipping</a>
+      <a class="nav-step" href="#step4">Returns</a>
+      <a class="nav-step" href="#step5">Checkout</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-edge"><span class="b"></span><span class="w"></span><span class="r"></span></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Module 4 · Payment, Shipping &amp; Returns</div>
+    <h1 class="hero-title">Shop with<br><em>complete confidence.</em></h1>
+    <p class="hero-sub">Everything you need to know about paying, receiving, and returning your Payote espadrilles — wherever you are in the world.</p>
+    <div class="hero-steps">
+      <div class="hs-item"><div class="hs-num">1</div><span class="hs-label">Our guarantees</span></div>
+      <div class="hs-item"><div class="hs-num">2</div><span class="hs-label">Payment</span></div>
+      <div class="hs-item"><div class="hs-num">3</div><span class="hs-label">Shipping</span></div>
+      <div class="hs-item"><div class="hs-num">4</div><span class="hs-label">Returns</span></div>
+      <div class="hs-item"><div class="hs-num">5</div><span class="hs-label">Checkout</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ STEP 1 · GUARANTEES ═══════════════════ -->
+<section class="step" id="step1">
+  <div class="step-inner">
+    <div class="step-header">
+      <div class="step-num-block">
+        <span class="step-num">01</span>
+        <span class="step-tag">Our guarantees</span>
+        <div class="step-fr"><span class="b"></span><span class="w"></span><span class="r"></span></div>
+      </div>
+      <div class="step-headline">
+        <h2 class="step-h">Four promises.<br>Every order.</h2>
+        <p class="step-lead">Before anything else — here is what Payote commits to every customer, whether you're ordering from Paris or Helsinki.</p>
+      </div>
+    </div>
+
+    <div class="promises-scene">
+
+      <!-- Left: Three.js orb + floating labels -->
+      <div class="orb-col">
+        <div class="orb-wrap">
+          <canvas id="orbCanvas"></canvas>
+          <!-- Floating promise labels — positioned by JS around the sphere -->
+          <div class="orb-labels" id="orbLabels"></div>
+        </div>
+      </div>
+
+      <!-- Right: detail panel + nav dots -->
+      <div class="orb-detail">
+        <div class="od-eyebrow" id="odEyebrow">Our guarantees</div>
+        <div class="od-icon"    id="odIcon">🔒</div>
+        <div class="od-title"   id="odTitle">Secure checkout, always</div>
+        <div class="od-body"    id="odBody">Every transaction encrypted end-to-end. Shopify Payments handles all processing — Payote never sees your card details.</div>
+        <span class="od-chip pc-g" id="odChip">SSL · 3D Secure 2.0</span>
+        <div class="od-dots" id="odDots"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ STEP 2 · PAYMENT ═══════════════════════ -->
+<section class="step" id="step2">
+  <div class="step-inner">
+    <div class="step-header">
+      <div class="step-num-block">
+        <span class="step-num">02</span>
+        <span class="step-tag">Payment methods</span>
+        <div class="step-fr"><span class="b"></span><span class="w"></span><span class="r"></span></div>
+      </div>
+      <div class="step-headline">
+        <h2 class="step-h">Pay your <em>way.</em></h2>
+        <p class="step-lead">Six international methods, two France-only options. Every transaction encrypted end-to-end.</p>
+      </div>
+    </div>
+    <div class="pay-layout">
+      <!-- LEFT: big tile grid -->
+      <div>
+        <div class="pay-col-label">International — available worldwide</div>
+        <div class="pay-tiles">
+          <div class="pay-tile intl-star">
+            <div class="pt-icon">💳</div>
+            <div class="pt-name">Card</div>
+            <div class="pt-desc">Visa, Mastercard, CB — all major international cards</div>
+            <span class="pt-badge pib-i">Worldwide</span>
+          </div>
+          <div class="pay-tile intl-star">
+            <div class="pt-icon">🅿️</div>
+            <div class="pt-name">PayPal</div>
+            <div class="pt-desc">Balance or card, with buyer protection on every order</div>
+            <span class="pt-badge pib-i">Worldwide</span>
+          </div>
+          <div class="pay-tile">
+            <div class="pt-icon">🍎</div>
+            <div class="pt-name">Apple Pay</div>
+            <div class="pt-desc">One tap on iPhone, iPad or Mac — no card number needed</div>
+            <span class="pt-badge pib-g">Fastest</span>
+          </div>
+          <div class="pay-tile">
+            <div class="pt-icon">🤖</div>
+            <div class="pt-name">Google Pay</div>
+            <div class="pt-desc">Instant on Android &amp; Chrome with saved info</div>
+            <span class="pt-badge pib-g">Fastest</span>
+          </div>
+          <div class="pay-tile">
+            <div class="pt-icon">🟣</div>
+            <div class="pt-name">Klarna</div>
+            <div class="pt-desc">3 interest-free instalments across Europe</div>
+            <span class="pt-badge pib-b">Pay later</span>
+          </div>
+          <div class="pay-tile">
+            <div class="pt-icon">🎁</div>
+            <div class="pt-name">Gift card</div>
+            <div class="pt-desc">Enter your Payote e-gift code at checkout</div>
+            <span class="pt-badge pib-i">Payote</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: sidebar -->
+      <div class="pay-sidebar">
+        <div class="sec-box">
+          <div class="sec-box-label">Security</div>
+          <div class="sec-box-title">PCI-DSS compliant via Shopify</div>
+          <div class="sec-box-body">Payote never sees or stores your card data. All processing is handled by Shopify Payments — certified to the highest PCI-DSS level.</div>
+        </div>
+
+        <!-- France-only — slim dignified strip -->
+        <div class="fr-only-strip">
+          <div class="fos-label">🇫🇷 Also available in France</div>
+          <div class="fos-items">
+            <div class="fos-item">
+              <span class="fos-icon">🏦</span>
+              <div>
+                <div class="fos-name">Bank transfer</div>
+                <div class="fos-desc">2–3 business days</div>
+              </div>
+            </div>
+            <div class="fos-item">
+              <span class="fos-icon">✉️</span>
+              <div>
+                <div class="fos-name">Cheque</div>
+                <div class="fos-desc">Contact us first</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-strip">
+      <div class="sec-pill"><span class="dot sd-g"></span>SSL / TLS encrypted</div>
+      <div class="sec-pill"><span class="dot sd-g"></span>3D Secure 2.0</div>
+      <div class="sec-pill"><span class="dot sd-b"></span>PCI-DSS (Shopify)</div>
+      <div class="sec-pill"><span class="dot sd-b"></span>Card data never stored</div>
+      <div class="sec-pill"><span class="dot sd-g"></span>PayPal buyer protection</div>
+      <div class="sec-pill"><span class="dot sd-g"></span>Klarna purchase protection</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ STEP 3 · SHIPPING ══════════════════════ -->
+<section class="step" id="step3">
+  <div class="step-inner">
+    <div class="step-header">
+      <div class="step-num-block">
+        <span class="step-num">03</span>
+        <span class="step-tag">Shipping · Colissimo</span>
+        <div class="step-fr"><span class="b"></span><span class="w"></span><span class="r"></span></div>
+      </div>
+      <div class="step-headline">
+        <h2 class="step-h">From France<br>to <em>anywhere.</em></h2>
+        <p class="step-lead">All orders ship via Colissimo with full tracking. Your parcel leaves within 24–48 hours of confirmation. Choose your zone below.</p>
+      </div>
+    </div>
+
+    <div class="free-ship-block">
+      <div class="fsb-num">€60</div>
+      <div class="fsb-text">
+        <div class="fsb-title">Free home delivery in France from €60</div>
+        <div class="fsb-sub">Free relay point pickup from €45 · Standard rates below · Colissimo, no signature required</div>
+      </div>
+    </div>
+
+    <div class="zone-tabs">
+      <button class="ztab active" onclick="showZone(this,'fr')"><span>🇫🇷 France</span></button>
+      <button class="ztab" onclick="showZone(this,'z1')"><span>Zone 1 · Benelux</span></button>
+      <button class="ztab" onclick="showZone(this,'z2')"><span>Zone 2 · South EU</span></button>
+      <button class="ztab" onclick="showZone(this,'z3')"><span>Zone 3 · North EU</span></button>
+      <button class="ztab" onclick="showZone(this,'z4')"><span>🇫🇮 Zone 4 · Finland</span></button>
+      <button class="ztab" onclick="showZone(this,'world')"><span>🌐 Worldwide</span></button>
+    </div>
+
+    <div class="zone-panel active" id="zone-fr">
+      <div class="zone-row"><div class="zr-flag">🏠</div><div class="zr-info"><div class="zr-name">Home delivery — Colissimo</div><div class="zr-detail">No signature required · Metropolitan France</div></div><div class="zr-right"><div><div class="zr-price">€6.00</div><div class="zr-free">Free from €60</div></div><div class="zr-days">2–3 business days</div></div></div>
+      <div class="zone-row"><div class="zr-flag">📦</div><div class="zr-info"><div class="zr-name">Relay point pickup — Colissimo</div><div class="zr-detail">Choose your pickup point at checkout</div></div><div class="zr-right"><div><div class="zr-price">€4.00</div><div class="zr-free">Free from €45</div></div><div class="zr-days">3–4 business days</div></div></div>
+    </div>
+    <div class="zone-panel" id="zone-z1">
+      <div class="zone-row"><div class="zr-flag">🇧🇪</div><div class="zr-info"><div class="zr-name">Belgium, Luxembourg</div><div class="zr-detail">Relay point available</div></div><div class="zr-right"><div class="zr-price">€6.90 relay · €9.90 home</div><div class="zr-days">4–6 days</div></div></div>
+      <div class="zone-row"><div class="zr-flag">🇩🇪</div><div class="zr-info"><div class="zr-name">Germany, Netherlands</div><div class="zr-detail">Relay point available</div></div><div class="zr-right"><div class="zr-price">€6.90 relay · €9.90 home</div><div class="zr-days">4–6 days</div></div></div>
+    </div>
+    <div class="zone-panel" id="zone-z2">
+      <div class="zone-row"><div class="zr-flag">🇪🇸</div><div class="zr-info"><div class="zr-name">Spain, Portugal, Andorra</div><div class="zr-detail">Relay point available</div></div><div class="zr-right"><div class="zr-price">€7.90 relay · €13.00 home</div><div class="zr-days">5–8 days</div></div></div>
+      <div class="zone-row"><div class="zr-flag">🇮🇹</div><div class="zr-info"><div class="zr-name">Italy, Austria, Ireland</div><div class="zr-detail">Home delivery</div></div><div class="zr-right"><div class="zr-price">€13.00</div><div class="zr-days">5–8 days</div></div></div>
+    </div>
+    <div class="zone-panel" id="zone-z3">
+      <div class="zone-row"><div class="zr-flag">🇸🇪</div><div class="zr-info"><div class="zr-name">Sweden, Denmark, Switzerland</div><div class="zr-detail">Relay point available</div></div><div class="zr-right"><div class="zr-price">€9.90 relay · €14.00 home</div><div class="zr-days">6–9 days</div></div></div>
+      <div class="zone-row"><div class="zr-flag">🇵🇱</div><div class="zr-info"><div class="zr-name">Poland, Czech Republic, Hungary</div><div class="zr-detail">Relay point available</div></div><div class="zr-right"><div class="zr-price">€9.90 relay · €14.00 home</div><div class="zr-days">6–9 days</div></div></div>
+    </div>
+    <div class="zone-panel" id="zone-z4">
+      <div class="zone-row fi"><div class="zr-flag">🇫🇮</div><div class="zr-info"><div class="zr-name">Finland — Suomi</div><div class="zr-detail">Home delivery · Colissimo Zone 4 · EU sizing — use our size guide</div></div><div class="zr-right"><div><div class="zr-price">€19.00</div><div class="zr-free">Home delivery</div></div><div class="zr-days">7–10 business days</div></div></div>
+      <div class="zone-row"><div class="zr-flag">🇬🇷</div><div class="zr-info"><div class="zr-name">Greece, Cyprus, Malta, Croatia</div></div><div class="zr-right"><div class="zr-price">€19.00</div><div class="zr-days">7–10 days</div></div></div>
+      <div class="zone-row"><div class="zr-flag">🇳🇴</div><div class="zr-info"><div class="zr-name">Norway, Iceland</div></div><div class="zr-right"><div class="zr-price">€19.00</div><div class="zr-days">7–10 days</div></div></div>
+      <div class="zone-row"><div class="zr-flag">🇷🇴</div><div class="zr-info"><div class="zr-name">Romania, Bulgaria, Turkey, Ukraine</div></div><div class="zr-right"><div class="zr-price">€19.00</div><div class="zr-days">7–10 days</div></div></div>
+    </div>
+    <div class="zone-panel" id="zone-world">
+      <div class="zone-row"><div class="zr-flag">🇺🇸</div><div class="zr-info"><div class="zr-name">United States, Canada</div><div class="zr-detail">Colissimo international</div></div><div class="zr-right"><div class="zr-price">From €22</div><div class="zr-days">8–14 days</div></div></div>
+      <div class="zone-row"><div class="zr-flag">🇯🇵</div><div class="zr-info"><div class="zr-name">Asia-Pacific</div><div class="zr-detail">Japan, Australia, Singapore and more</div></div><div class="zr-right"><div class="zr-price">From €28</div><div class="zr-days">10–18 days</div></div></div>
+      <div class="zone-row"><div class="zr-flag">🌍</div><div class="zr-info"><div class="zr-name">Rest of the World</div></div><div class="zr-right"><div class="zr-price">Calculated at checkout</div><div class="zr-days">Variable</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ STEP 4 · RETURNS ═══════════════════════ -->
+<section class="step" id="step4">
+  <div class="step-inner">
+    <div class="step-header">
+      <div class="step-num-block">
+        <span class="step-num">04</span>
+        <span class="step-tag">Returns &amp; refunds</span>
+        <div class="step-fr"><span class="b"></span><span class="w"></span><span class="r"></span></div>
+      </div>
+      <div class="step-headline">
+        <h2 class="step-h">Not right?<br><em>No problem.</em></h2>
+        <p class="step-lead">Returns are free from France. International returns are deducted at the outbound shipping rate. Every refund processed within 7 business days.</p>
+      </div>
+    </div>
+
+    <div class="ret-big-grid">
+      <div class="ret-big gr">
+        <div class="ret-big-num">14</div>
+        <div class="ret-big-title">Days for a full refund</div>
+        <div class="ret-big-body">Return within 14 days of receipt in original condition — unworn, undamaged — for a complete refund to your original payment method.</div>
+      </div>
+      <div class="ret-big bl">
+        <div class="ret-big-num">30</div>
+        <div class="ret-big-title">Days for store credit</div>
+        <div class="ret-big-body">Within 30 days, choose store credit instead. A unique voucher code is emailed within 7 business days, valid on any future order.</div>
+      </div>
+    </div>
+
+    <div class="rt-label-top">How to return — 4 steps</div>
+    <div class="rt-grid">
+      <div class="rt-step">
+        <div class="rt-step-dot">1</div>
+        <div class="rt-step-title">Visit the return portal</div>
+        <div class="rt-step-desc">Go online to the Payote return portal. Enter your order number and delivery postcode to log in.</div>
+      </div>
+      <div class="rt-step">
+        <div class="rt-step-dot">2</div>
+        <div class="rt-step-title">Select &amp; choose</div>
+        <div class="rt-step-desc">Pick the items to return and your reason. Then decide: full refund or store credit voucher.</div>
+      </div>
+      <div class="rt-step">
+        <div class="rt-step-dot">3</div>
+        <div class="rt-step-title">Pack &amp; send</div>
+        <div class="rt-step-desc">Pack your items as received. Print the Colissimo return label and drop off at the nearest relay point.</div>
+      </div>
+      <div class="rt-step">
+        <div class="rt-step-dot">4</div>
+        <div class="rt-step-title">Refund issued</div>
+        <div class="rt-step-desc">Once received, your refund or voucher is processed within 7 business days. Email notification at each step.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ STEP 5 · CHECKOUT ══════════════════════ -->
+<section class="step" id="step5">
+  <div class="step-inner">
+    <div class="step-header">
+      <div class="step-num-block">
+        <span class="step-num">05</span>
+        <span class="step-tag">The checkout</span>
+        <div class="step-fr"><span class="b"></span><span class="w"></span><span class="r"></span></div>
+      </div>
+      <div class="step-headline">
+        <h2 class="step-h">Fast, clear,<br><em>trusted.</em></h2>
+        <p class="step-lead">Security signals belong at the point of decision — not buried in a footer. This is what the optimised Payote checkout communicates to every international buyer.</p>
+      </div>
+    </div>
+    <div class="checkout-scene">
+      <div class="cs-form">
+        <div class="cs-form-title">🔒 Secure checkout</div>
+        <div class="cs-fields">
+          <div class="cs-row">
+            <div class="cs-field">First name</div>
+            <div class="cs-field">Last name</div>
+          </div>
+          <div class="cs-row">
+            <div class="cs-field full lit">Card number &nbsp;&nbsp; <span class="cs-lock-icon">🔒 encrypted</span></div>
+          </div>
+          <div class="cs-row">
+            <div class="cs-field">MM / YY</div>
+            <div class="cs-field">CVV</div>
+          </div>
+        </div>
+        <div class="cs-pay-icons">
+          <span class="cpi">Visa</span>
+          <span class="cpi">Mastercard</span>
+          <span class="cpi">PayPal</span>
+          <span class="cpi">Apple Pay</span>
+          <span class="cpi">Google Pay</span>
+          <span class="cpi">Klarna</span>
+        </div>
+      </div>
+      <div class="cs-summary">
+        <div class="cs-sum-title">Your order</div>
+        <div class="cs-line"><span>Paris Canvas × 1</span><span>€89.00</span></div>
+        <div class="cs-line"><span>Riviera Suede × 1</span><span>€109.00</span></div>
+        <div class="cs-line dim"><span>Shipping — Finland 🇫🇮</span><span>€19.00</span></div>
+        <div class="cs-total"><span>Total</span><span>€217.00</span></div>
+        <button class="cs-cta">🔒 &nbsp; Pay securely →</button>
+        <div class="cs-trust">
+          <span>SSL encrypted</span>
+          <span>3D Secure</span>
+          <span>PayPal protected</span>
+          <span>Easy returns</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section">
+  <div class="contact-eye">A question about your order?</div>
+  <div class="contact-title">We're here for you.</div>
+  <div class="contact-sub">Monday to Friday · 9am–1pm &amp; 2pm–5pm (CET)</div>
+  <div class="contact-det">(+33) 04 68 64 32 24 · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b5c6d4c3f5c5d4ccdac1d09bd3c7">[email&#160;protected]</a></div>
+  <div class="contact-btns">
+    <button class="c-btn pr">📧 &nbsp; Email us</button>
+    <button class="c-btn ou">↩ &nbsp; Return portal</button>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function() {
+  const canvas = document.getElementById('orbCanvas');
+  if (!canvas || typeof THREE === 'undefined') return;
+
+  const SIZE = 400;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(SIZE, SIZE);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+
+  const scene  = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+  camera.position.set(0, 0.5, 3.4);
+  camera.lookAt(0, 0, 0);
+
+  /* ══════════════════════════════════════════
+     GLOBE TEXTURE — drawn on a 2048×1024 canvas
+     Equirectangular projection:
+       x = W * (lon + 180) / 360
+       y = H * (1 - (lat + 90) / 180)
+  ══════════════════════════════════════════ */
+  function buildTexture() {
+    const W = 2048, H = 1024;
+    const cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    const ctx = cv.getContext('2d');
+
+    /* coordinate helpers */
+    const px = (lon, lat) => [
+      W * (lon + 180) / 360,
+      H * (1 - (lat + 90) / 180)
+    ];
+
+    /* ── OCEAN — warm pale parchment ── */
+    const oceanGrad = ctx.createLinearGradient(0, 0, 0, H);
+    oceanGrad.addColorStop(0,   '#c8d8e8');
+    oceanGrad.addColorStop(0.4, '#b8cfe0');
+    oceanGrad.addColorStop(1,   '#a8c0d4');
+    ctx.fillStyle = oceanGrad;
+    ctx.fillRect(0, 0, W, H);
+
+    /* ── GRID LINES — fine, pale ── */
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+    ctx.lineWidth = 0.7;
+    for (let lat = -80; lat <= 80; lat += 20) {
+      const [, y] = px(0, lat);
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+    for (let lon = -180; lon <= 180; lon += 30) {
+      const [x] = px(lon, 0);
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    }
+    ctx.restore();
+
+    /* ── LAND DRAWING ── */
+    const LAND_FILL   = '#e8dcc8';   /* warm cream */
+    const LAND_STROKE = '#b09870';   /* mid gold-brown border */
+    const SW = 1.2;
+
+    function poly(coords) {
+      ctx.beginPath();
+      ctx.moveTo(...px(...coords[0]));
+      for (let i = 1; i < coords.length; i++) ctx.lineTo(...px(...coords[i]));
+      ctx.closePath();
+      ctx.fillStyle   = LAND_FILL;   ctx.fill();
+      ctx.strokeStyle = LAND_STROKE; ctx.lineWidth = SW; ctx.stroke();
+    }
+
+    /* ────────────────────────────────────────────
+       NORTH AMERICA  — recognisable block shape
+    ──────────────────────────────────────────── */
+    poly([
+      [-168,72],[-155,72],[-140,70],[-130,68],[-115,70],[-95,75],[-85,73],
+      [-75,68],[-64,60],[-60,47],[-67,44],[-70,42],[-75,38],[-80,32],
+      [-82,28],[-80,25],[-85,20],[-88,16],[-84,10],[-78,9],[-75,10],
+      [-63,10],[-60,12],[-65,18],[-72,20],[-80,26],[-81,32],[-75,35],
+      [-74,40],[-70,44],[-56,47],[-54,50],[-58,52],[-66,58],[-72,63],
+      [-80,65],[-88,70],[-95,74],[-110,72],[-125,70],[-136,60],[-142,58],
+      [-148,60],[-155,60],[-162,60],[-168,65]
+    ]);
+
+    /* Baja California peninsula */
+    poly([[-117,32],[-118,30],[-114,28],[-110,24],[-109,23],[-110,24],[-113,28],[-117,32]]);
+
+    /* Florida */
+    poly([[-81,31],[-82,29],[-81,27],[-80,25],[-80,27],[-81,30],[-81,31]]);
+
+    /* ────────────────────────────────────────────
+       GREENLAND
+    ──────────────────────────────────────────── */
+    poly([
+      [-52,82],[-30,84],[-18,77],[-20,72],[-26,68],[-34,64],
+      [-44,60],[-52,66],[-56,74],[-52,82]
+    ]);
+
+    /* ────────────────────────────────────────────
+       SOUTH AMERICA  — tapered cone shape
+    ──────────────────────────────────────────── */
+    poly([
+      [-80,12],[-76,12],[-62,12],[-60,8],[-52,4],[-50,2],[-48,-2],
+      [-38,-4],[-34,-7],[-36,-12],[-38,-16],[-40,-20],[-44,-23],
+      [-48,-28],[-50,-30],[-52,-34],[-58,-38],[-62,-42],[-65,-46],
+      [-66,-52],[-68,-55],[-66,-57],[-62,-55],[-58,-52],[-57,-46],
+      [-52,-38],[-50,-28],[-48,-22],[-45,-15],[-42,-8],[-48,-2],
+      [-50,3],[-58,6],[-62,8],[-68,12],[-76,10],[-80,12]
+    ]);
+
+    /* ────────────────────────────────────────────
+       EUROPE  — careful recognisable block
+    ──────────────────────────────────────────── */
+    poly([
+      [-10,36],[-6,36],[0,38],[5,42],[8,44],[12,44],[15,38],[16,38],
+      [18,40],[20,38],[24,38],[26,40],[28,42],[30,42],[32,36],[36,36],
+      [36,42],[34,46],[32,48],[30,50],[26,55],[22,56],[20,56],
+      [18,60],[16,62],[15,64],[20,68],[24,70],[28,71],[30,70],
+      [30,64],[28,58],[24,55],[20,56],[16,56],[12,56],[10,54],
+      [8,56],[6,58],[4,56],[2,52],[0,51],[-2,52],[-5,48],[-2,44],
+      [0,42],[3,44],[5,44],[5,42],[0,38],[-6,36],[-10,36]
+    ]);
+
+    /* Scandinavia clearer */
+    poly([
+      [5,57],[8,58],[10,63],[12,64],[14,65],[18,68],[22,70],[26,71],
+      [28,71],[30,68],[28,65],[28,58],[24,56],[20,56],[16,56],
+      [12,57],[10,58],[5,57]
+    ]);
+
+    /* Iberian Peninsula */
+    poly([
+      [-9,44],[-2,44],[-2,43],[3,43],[3,42],[0,38],[-6,36],[-9,38],[-9,44]
+    ]);
+
+    /* Italian Boot */
+    poly([
+      [7,44],[12,44],[14,42],[16,40],[16,38],[14,38],[14,40],
+      [16,40],[16,38],[14,38],[12,40],[10,44],[7,44]
+    ]);
+    poly([[15,38],[16,38],[16,36],[14,36],[14,38],[15,38]]); /* toe */
+
+    /* ────────────────────────────────────────────
+       BRITISH ISLES
+    ──────────────────────────────────────────── */
+    poly([[-6,50],[-2,50],[2,52],[1,53],[-2,56],[-4,58],[-6,58],[-7,56],[-5,54],[-3,52],[-5,50],[-6,50]]);
+    poly([[-10,52],[-6,52],[-6,54],[-8,55],[-10,54],[-10,52]]);
+
+    /* ────────────────────────────────────────────
+       AFRICA  — clear recognisable silhouette
+    ──────────────────────────────────────────── */
+    poly([
+      [-6,36],[0,38],[10,38],[15,37],[24,38],[32,32],[36,24],
+      [42,12],[44,10],[42,12],[44,15],[42,20],[40,22],[36,24],
+      [33,32],[30,30],[28,34],[22,34],[18,34],[14,28],[10,15],
+      [8,5],[2,5],[-2,4],[-8,5],[-14,10],[-17,14],[-16,20],
+      [-14,26],[-8,30],[-6,36]
+    ]);
+
+    /* Madagascar */
+    poly([[44,-12],[50,-14],[50,-22],[44,-26],[44,-12]]);
+
+    /* ────────────────────────────────────────────
+       ASIA  — broken into recognisable blocks
+    ──────────────────────────────────────────── */
+    /* Main Asia block */
+    poly([
+      [26,72],[34,72],[40,68],[50,72],[60,74],[72,74],[80,74],
+      [100,72],[120,74],[130,72],[140,70],[146,64],[142,60],
+      [138,54],[134,46],[130,40],[128,36],[122,32],[118,24],
+      [108,20],[102,18],[100,16],[104,10],[110,8],[120,10],
+      [126,18],[122,28],[120,34],[124,38],[128,40],[132,42],
+      [135,46],[138,46],[140,50],[138,54],[134,46],[130,40],
+      [128,36],[122,32],[118,24],[108,20],[102,18],[100,16],
+      [96,16],[88,20],[80,28],[72,24],[66,22],[62,22],[60,24],
+      [56,26],[52,28],[48,30],[44,34],[36,36],[32,36],[30,42],
+      [32,48],[30,50],[34,56],[36,60],[40,68],[34,72],[26,72]
+    ]);
+
+    /* Indian Subcontinent — distinctive triangle */
+    poly([
+      [62,24],[68,24],[72,22],[76,20],[78,16],[80,10],[78,8],
+      [76,8],[72,10],[68,14],[64,20],[62,24]
+    ]);
+
+    /* Arabian Peninsula */
+    poly([
+      [36,30],[44,30],[48,30],[52,24],[56,22],[60,22],[56,18],
+      [50,14],[44,12],[40,14],[36,18],[36,22],[36,30]
+    ]);
+
+    /* Indochina + SE Asia */
+    poly([
+      [96,28],[102,26],[106,22],[104,14],[100,4],[102,2],
+      [106,4],[110,6],[114,4],[110,2],[106,2],[104,2],
+      [100,4],[96,10],[94,16],[94,22],[96,28]
+    ]);
+
+    /* ────────────────────────────────────────────
+       JAPAN  — simplified four-island chain
+    ──────────────────────────────────────────── */
+    poly([[130,32],[132,34],[134,36],[136,36],[136,34],[132,32],[130,32]]);
+    poly([[132,34],[134,36],[136,38],[138,38],[140,40],[141,41],[140,42],[138,40],[136,38],[134,36],[132,34]]);
+
+    /* ────────────────────────────────────────────
+       AUSTRALIA  — very recognisable silhouette
+    ──────────────────────────────────────────── */
+    poly([
+      [114,-22],[116,-20],[122,-18],[128,-14],[134,-12],[138,-14],
+      [142,-14],[148,-18],[152,-24],[152,-28],[150,-34],[148,-38],
+      [144,-38],[140,-36],[136,-34],[130,-32],[126,-34],[122,-34],
+      [116,-32],[114,-28],[112,-25],[114,-22]
+    ]);
+
+    /* New Zealand */
+    poly([[168,-46],[170,-44],[172,-42],[174,-38],[172,-36],[170,-36],[168,-40],[168,-46]]);
+    poly([[172,-40],[174,-38],[176,-36],[176,-38],[172,-40]]);
+
+    /* ────────────────────────────────────────────
+       FRANCE HIGHLIGHT  — gold tint
+    ──────────────────────────────────────────── */
+    ctx.save();
+    const frCoords = [[-5,44],[-2,44],[3,44],[7,46],[7,48],[5,50],[2,51],[-2,51],[-4,48],[-5,44]];
+    ctx.beginPath();
+    ctx.moveTo(...px(...frCoords[0]));
+    frCoords.forEach((c,i) => { if(i) ctx.lineTo(...px(...c)); });
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(0,35,149,0.22)'; ctx.fill();
+    ctx.strokeStyle = '#002395'; ctx.lineWidth = 2.2; ctx.stroke();
+    ctx.restore();
+
+    /* FR label dot */
+    ctx.save();
+    const [fx, fy] = px(2, 47);
+    ctx.beginPath(); ctx.arc(fx, fy, 5, 0, Math.PI*2);
+    ctx.fillStyle = '#002395'; ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.restore();
+
+    /* ────────────────────────────────────────────
+       FINLAND HIGHLIGHT  — blue tint
+    ──────────────────────────────────────────── */
+    ctx.save();
+    const fiCoords = [[20,60],[28,60],[30,64],[28,70],[25,70],[22,68],[20,65],[20,60]];
+    ctx.beginPath();
+    ctx.moveTo(...px(...fiCoords[0]));
+    fiCoords.forEach((c,i) => { if(i) ctx.lineTo(...px(...c)); });
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(100,160,240,0.28)'; ctx.fill();
+    ctx.strokeStyle = '#4488ee'; ctx.lineWidth = 2.0; ctx.stroke();
+    ctx.restore();
+
+    /* FI label dot */
+    ctx.save();
+    const [fix, fiy] = px(25, 64);
+    ctx.beginPath(); ctx.arc(fix, fiy, 5, 0, Math.PI*2);
+    ctx.fillStyle = '#4488ee'; ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.restore();
+
+    return new THREE.CanvasTexture(cv);
+  }
+
+  /* Globe sphere */
+  const globeMat = new THREE.MeshStandardMaterial({
+    map: buildTexture(),
+    roughness: 0.75,
+    metalness: 0.05,
+    emissive: new THREE.Color(0x102030),
+    emissiveIntensity: 0.08,
+  });
+  const globe = new THREE.Mesh(new THREE.SphereGeometry(1, 128, 128), globeMat);
+  scene.add(globe);
+
+  /* Atmosphere shell — soft blue outer glow */
+  scene.add(new THREE.Mesh(
+    new THREE.SphereGeometry(1.07, 32, 32),
+    new THREE.MeshBasicMaterial({ color: 0x88bbdd, transparent: true, opacity: 0.055, side: THREE.BackSide })
+  ));
+
+  /* Lights — simulating sunlight from side */
+  const sun = new THREE.DirectionalLight(0xfff5e8, 2.6);
+  sun.position.set(-3, 2, 3); scene.add(sun);
+  scene.add(new THREE.AmbientLight(0x8899bb, 0.6));
+  const rim = new THREE.DirectionalLight(0x6688aa, 0.5);
+  rim.position.set(3, -1, -2); scene.add(rim);
+
+  /* ── DETAIL PANEL (no labels on globe, just panel + dots) ── */
+  const PROMISES = [
+    { icon:'🔒', label:'Secure checkout', title:'Secure checkout, always',       body:'Every transaction encrypted end-to-end. Shopify Payments handles all processing — Payote never sees or stores your card details.', chip:'SSL · 3D Secure 2.0',           chipClass:'pc-g' },
+    { icon:'🌍', label:'Ships worldwide',  title:'Ships to your door, worldwide', body:'From Perpignan to Helsinki, New York to Tokyo. Colissimo with full tracking. Dispatched within 24-48 hours.',                      chip:'50+ countries covered',         chipClass:'pc-b' },
+    { icon:'↩️', label:'Easy returns',    title:'Returns made simple',           body:'Free returns from France. 14 days for a full refund, 30 days for store credit. Our portal handles everything online.',               chip:'14 day refund · 30 day credit', chipClass:'pc-r' },
+    { icon:'🏭', label:'Made in France',  title:'Handcrafted in France',         body:'Every pair made in Perpignan, Mauléon or Romans-sur-Isère. The French savoir-faire in every stitch.',                              chip:'Made in France',                chipClass:'pc-a' },
+  ];
+
+  /* Clear any old labels from DOM */
+  const labelsWrap = document.getElementById('orbLabels');
+  if (labelsWrap) labelsWrap.innerHTML = '';
+
+  /* Nav dots */
+  const dotsWrap = document.getElementById('odDots');
+  dotsWrap.innerHTML = '';
+  const dotEls = [];
+  PROMISES.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'od-dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => pick(i, true);
+    dotsWrap.appendChild(d);
+    dotEls.push(d);
+  });
+
+  let active = 0, paused = false, autoT;
+
+  function pick(i, pause) {
+    ['odIcon','odTitle','odBody','odChip'].forEach(id =>
+      document.getElementById(id).classList.add('swap')
+    );
+    setTimeout(() => {
+      active = i;
+      const p = PROMISES[i];
+      document.getElementById('odIcon').textContent  = p.icon;
+      document.getElementById('odTitle').textContent = p.title;
+      document.getElementById('odBody').textContent  = p.body;
+      const chip = document.getElementById('odChip');
+      chip.textContent = p.chip; chip.className = 'od-chip ' + p.chipClass;
+      ['odIcon','odTitle','odBody','odChip'].forEach(id =>
+        document.getElementById(id).classList.remove('swap')
+      );
+      dotEls.forEach((d,j) => d.classList.toggle('active', j === i));
+    }, 220);
+    if (pause) { paused = true; clearInterval(autoT); }
+  }
+
+  function startAuto() {
+    clearInterval(autoT);
+    autoT = setInterval(() => {
+      if (!paused) pick((active + 1) % PROMISES.length, false);
+    }, 3500);
+  }
+
+  /* Resume on mouse leave of globe */
+  canvas.addEventListener('mouseleave', () => { paused = false; startAuto(); });
+  canvas.addEventListener('mouseenter', () => { paused = true; clearInterval(autoT); });
+
+  /* Animation */
+  let t = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    t += 0.004;
+    if (!paused) globe.rotation.y += 0.0035;
+    globe.rotation.x = 0.18 + Math.sin(t * 0.3) * 0.015;
+    sun.position.x = Math.cos(t * 0.15) * 3;
+    sun.position.z = Math.sin(t * 0.15) * 3 + 1;
+    renderer.render(scene, camera);
+  }
+
+  pick(0, false);
+  startAuto();
+  animate();
+})();
+
+/* ── ZONE TABS ───────────────────────────────── */
+function showZone(btn, id) {
+  document.querySelectorAll('.zone-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.ztab').forEach(t => t.classList.remove('active'));
+  document.getElementById('zone-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ── SCROLL NAV ──────────────────────────────── */
+const stepIds  = ['step1','step2','step3','step4','step5'];
+const navLinks = document.querySelectorAll('.nav-step');
+window.addEventListener('scroll', () => {
+  let current = stepIds[0];
+  stepIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < 130) current = id;
+  });
+  navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + current));
+}, { passive: true });
+</script>
+</body>
+</html>
